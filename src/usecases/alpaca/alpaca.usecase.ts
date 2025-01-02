@@ -6,18 +6,19 @@ import { getAlpacaFromDB } from "../../infrastructure/repositories/alpaca.reposi
 
 export const getAlpaca = async (alpacaId: number): Promise<AlpacaOutput> => {
     // start
-    const chilgLog = logger().child({ alpacaId });
-    chilgLog.info('getting alpaca')
+    const childLog = logger().child({ alpacaId });
+    childLog.info('getting alpaca')
 
     //obtener la alpaca
     const alpaca = await getAlpacaFromDB(alpacaId);
-    if(!alpaca){
-        chilgLog.info('Alpaca not found');
-        // lanzar un error
-        throw AlpacaNotFound;
+    if (!alpaca) {
+        childLog.warn('Alpaca not found');
+        // Lanzar un error genérico con el objeto AlpacaNotFound
+        throw { ...AlpacaNotFound, details: `Alpaca with ID ${alpacaId} not found` };
     }
+    
 
     // end
-    chilgLog.info('Alpaca retrieved successfully')
+    childLog.info('Alpaca retrieved successfully')
     return alpacaModel(alpaca);
 }
