@@ -3,6 +3,10 @@ import logger from "pino";
 import { AlpacaNotFound } from "../../infrastructure/controllers/apiExceptions";
 import alpacaModel, { type AlpacaOutput } from "../../domain/Alpaca/outputModels/alpaca.model";
 import * as alpacaRepository from '../../infrastructure/repositories/alpaca.repository'
+import Alpaca from '../../domain/Alpaca/Alpaca';
+
+export type CreateAlpacaPayload = Pick<Alpaca, 'name' | 'color'>;
+export type UpdateAlpacaPayload = Pick<Alpaca, 'name'>;
 
 export const getAlpaca = async (alpacaId: number): Promise<AlpacaOutput> => {
     // start
