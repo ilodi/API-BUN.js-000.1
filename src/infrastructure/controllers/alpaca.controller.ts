@@ -1,13 +1,13 @@
-import type { Request, Response } from 'express';
-import { AlpacaRetrievedOk, AlpacaNotFound } from './apiResponse';  // Agrega la respuesta de AlpacaNotFound si aún no la tienes
+import { response, type Request, type Response } from 'express';
+import { AlpacaRetrievedOk, AlpacaNotFound, AlpacaDeletedOk } from './apiResponse';  // Agrega la respuesta de AlpacaNotFound si aún no la tienes
 import * as alpacaRepository from '../repositories/alpaca.repository';
+import type { AlpacaOutput } from '../../domain/Alpaca/outputModels/alpaca.model';
+import * as alpacaUsecase from '../../usecases/alpaca/alpaca.usecase'
 
 export const getAlpaca = async (req: Request, res: Response) => {
     const alpacaId: number = parseInt(req.params.alpacaId);
-
     try {
         const alpaca = await alpacaRepository.getAlpacaFromDB(alpacaId);
-        
         // Si no se encuentra la alpaca, respondemos con un error 404
         if (!alpaca) {
             return res.status(404).json({
@@ -33,3 +33,23 @@ export const getAlpaca = async (req: Request, res: Response) => {
         });
     }
 };
+
+
+export const getAlpacas = async (req: Request, res: Response): Promise<AlpacaOutput[]> => {
+    try {
+        const alpacas = await alpacaUsecase.getAlpacas();
+        res.json({response: AlpacaRetrievedOk, data: alpacas})
+    } catch (error) {
+        res.json({response: error})   
+    }
+}
+
+export const deleteAlpaca = async (req: Request, res: Response) => {
+    const alpacaId: number = parseInt(req.params.alpacaId);
+    try {
+      await alpacaUsecase.deleteAlpaca(alpacaId);
+      res.json({ response: AlpacaDeletedOk });  
+    } catch(error) {
+      res.json({ response: error });
+    }
+  }

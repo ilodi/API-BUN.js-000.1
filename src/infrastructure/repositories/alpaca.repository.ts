@@ -15,10 +15,25 @@ type DbAlpaca = {
     color: string
 }
 
-export const getAlpacaFromDB = async (alpacaId: number): Promise<Alpaca | null> => {
+export const get = async (alpacaId: number): Promise<Alpaca | null> => {
     const [rows] = await pool.query('SELECT * FROM alpaca WHERE id = ?', [alpacaId]);
     const dbAlpacas = rows as DbAlpaca[];
     return dbAlpacas.length > 0 ? restore(dbAlpacas[0]) : null;
+};
+
+export const getAll = async(): Promise<Alpaca []> =>{
+    const [rows] = await pool.query('SELECT * FROM alpaca', []); 
+    const dbAlpacas = rows as DbAlpaca[];
+    return dbAlpacas.map(restore)
+}
+
+export const deleteAlpacaById = async (alpacaId: number): Promise<void> => {
+    try {
+        await pool.query('DELETE FROM alpaca WHERE id = ?', [alpacaId]);
+    } catch (error) {
+        console.error('Error deleting alpaca by ID:', error);
+        throw new Error('Database query failed');
+    }
 };
 
 const restore = (dbAlpaca: DbAlpaca): Alpaca => {
